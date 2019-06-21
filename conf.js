@@ -4,11 +4,11 @@ exports.socket_port = 8002
 
 exports.pg_conf = {
     //pg的数据库配置信息
-    host: 'localhost',
+    host: '118.89.21.131',
     port: 5432,
-    database: 'order',
-    user: 'order',
-    password: 'order',
+    database: 'chat',
+    user: 'chat',
+    password: 'chat',
     //连接池
     max: 2000,
     idleTimeoutMillis: 30000,

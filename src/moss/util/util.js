@@ -20,6 +20,16 @@ exports.error = error => {
 exports.toString = obj => {
     return JSON.stringify(obj);
 }
+//转字符串
+exports.toStringNoPwd = obj => {
+    return JSON.stringify(obj,function (key,value) {
+        if(key == 'pwd'){
+            return null
+        }else{
+            return value
+        }
+    });
+}
 //获取一个pg的链接
 exports.getPool = () => {
     return pool
