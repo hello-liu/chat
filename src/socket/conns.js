@@ -6,7 +6,6 @@ var id = 0 ;
 exports.deal = function (ws,req) {
     
     ws.id = id++
-    conns.set(ws.id,ws)
     util.info('conn:'+ws.id)
 
     //收到消息事件
@@ -23,6 +22,4 @@ exports.deal = function (ws,req) {
         util.info('close:'+this.id)
     });
 }
-
-exports.
 
