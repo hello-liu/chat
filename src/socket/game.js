@@ -1,91 +1,84 @@
 var conns = require('./conns')
-var {Game_1v1} = require('./way/game_1v1')
-var {Game_2v2} = require('./way/game_2v2')
 var util = require('../moss/util/util')
 
-//桌子
-var tables = new Map();
+//世界的人
+var world = new Map();
 
-//所有的连接
-var players = new Map();
+//房间
+var rooms = new Map();
+
 //websocket 回调处理方法
-exports.message = function (msg, wsId ) {
-    var msgJson = JSON.parse(msg)
-    var method = msgJson.method
+exports.message = function (message, ws ) {
+    
+    var method = message.method
     switch(method){
-        case 'in':
-            //加入房间
-            in1(msgJson,wsId)
+        case 'toWorld':
+            //世界消息
+            toWorld(message,ws)
             break;
-        case 'out':
-            //退出房间
-            out1(msgJson,wsId)
+        case 'toRoom':
+            //房间消息
+            toRoom(message,ws)
             break;
-        case 'ready':
-            //准备
-            ready(msgJson,wsId)
+        case 'toPersonal':
+            //个人消息
+            toPersonal(message,ws)
             break;
-        case 'noReady':
-            //取消准备
-            noReady(msgJson,wsId)
+        case 'inWorld':
+            inWorld(message,ws)
             break;
-        case 'call':
-            //叫分
-            var roomId = msgJson.roomId
-            var table = tables.get(roomId)
-            table.game.jiaofen(msgJson)
+        case 'inRoom':
+            inRoom(message,ws)
             break;
-        case 'major':
-            //选主
-            var roomId = msgJson.roomId
-            var table = tables.get(roomId)
-            table.game.xuanzhu(msgJson)
-            break;
-        case 'holding':
-            //扣牌
-            var roomId = msgJson.roomId
-            var table = tables.get(roomId)
-            table.game.koupai(msgJson)
-            break;
-        case 'play':
-            //出牌
-            var roomId = msgJson.roomId
-            var table = tables.get(roomId)
-            table.game.chupai(msgJson)
-            break;
-        case 'ping':
-            //ping
-            break; 
-        case 'iam':
-            //我是
-            var name = msgJson.name
-            util.info("conn : "+name)
-
-            break;
-        case 'tables':
-            //获取桌子的信息
-            var name = msgJson.name
-            conns.sendMsg(wsId, util.fmt_tables(tables) );
-            break;
-        case 'table':
-            //获取本桌子的信息
-            var roomId = msgJson.roomId
-            var table = tables.get(roomId);
-            conns.sendMsg(wsId,util.fmt_table(table));
-            break;
-        case 'chat':
-            //聊天
-            break;
-        case 'close':
-            //掉线
-            var player = players.get(wsId)
-            //在桌子里面的话，给他来个强退
-            if(player){
-                out1({method:"out",roomId:player.roomId,sit:player.sit,playerId:player.playerId},wsId)
-            }
+        case 'logout':
+            logout(message,ws)
             break;
         default :
             //不认识的消息
+    }
+}
+
+function send (ws,message) {
+    if(ws.readyState == 1){
+        ws.send(message)
+    }
+}
+
+function inWorld(message,ws) {
+    var name = message.name
+    var wsId = ws.id
+    ws.name = name
+    world.set(wsId,ws)
+
+    for(value of world){
+        var id = value[0]
+        var s = value[1]
+        send(s,name+"加入聊天室！")
+    }
+}
+
+function inRoom(message,ws) {
+    var roomId = message.roomId
+    var name = message.name
+    var wsId = ws.id
+
+    var room = rooms.get(roomId)
+    //不存在则创建房间
+    if(!room){
+        room = new Map();
+        rooms.set(roomId,room )
+    }
+    room.set(wsId,ws)
+
+    //加入到房间中
+    ws.name = name
+    world.set(wsId,ws)
+
+    //发送加入信息
+    for(value of room){
+        var id = value[0]
+        var s = value[1]
+        send(s,name+"加入聊天室！")
     }
 }
 
