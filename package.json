@@ -1,0 +1,27 @@
+{
+  "name": "chat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "multer": "^1.4.1",
+    "pg": "^7.11.0",
+    "uuid": "^3.3.2",
+    "ws": "^7.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hello-liu/chat.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hello-liu/chat/issues"
+  },
+  "homepage": "https://github.com/hello-liu/chat#readme"
+}
